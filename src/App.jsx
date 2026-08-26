@@ -198,22 +198,47 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generationIndex, setGenerationIndex] = useState(0)
 
-  const generateLanding = () => {
-    setIsGenerating(true)
-
-    window.setTimeout(() => {
-      setLanding(
-        buildLanding(
-          productName,
-          productDescription,
-          selectedStyle,
-          generationIndex,
-        ),
-      )
-      setGenerationIndex((index) => index + 1)
-      setIsGenerating(false)
-    }, 450)
+  const generateLanding = async () => {
+  if (!productName.trim() || !productDescription.trim()) {
+    return
   }
+
+  setIsGenerating(true)
+
+  try {
+    const response = await fetch('http://localhost:3001/api/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        productName,
+        productDescription,
+        style: selectedStyle,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to generate landing page')
+    }
+
+    const generatedLanding = await response.json()
+
+    setLanding({
+      ...generatedLanding,
+      productName,
+      productDescription,
+      style: selectedStyle,
+    })
+
+    setGenerationIndex((index) => index + 1)
+  } catch (error) {
+    console.error(error)
+    alert('Не удалось сгенерировать лендинг. Проверь, запущен ли AI-сервер.')
+  } finally {
+    setIsGenerating(false)
+  }
+}
 
   const regenerateLanding = () => {
     setIsGenerating(true)
@@ -387,13 +412,13 @@ function App() {
                 </div>
 
                 <div className="feature-grid">
-                  {landing.features.map(([number, title, description]) => (
-                    <article className="feature-card" key={number}>
-                      <span>{number}</span>
-                      <h5>{title}</h5>
-                      <p>{description}</p>
-                    </article>
-                  ))}
+                {landing.features.map((feature, index) => (
+  <article className="feature-card" key={index}>
+    <span>{String(index + 1).padStart(2, '0')}</span>
+    <h5>{feature.title}</h5>
+    <p>{feature.description}</p>
+  </article>
+))}
                 </div>
               </section>
 
