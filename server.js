@@ -1,17 +1,23 @@
 import 'dotenv/config'
 import express from 'express'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { GoogleGenAI } from '@google/genai'
 
 const app = express()
-const PORT = 3001
+const PORT = process.env.PORT || 3001
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 })
 
 app.use(express.json())
+
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:5173')
+  res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type')
 
@@ -21,6 +27,7 @@ app.use((req, res, next) => {
 
   next()
 })
+
 app.post('/api/generate', async (req, res) => {
   try {
     const { productName, productDescription, style } = req.body
@@ -75,16 +82,14 @@ Return ONLY valid JSON in this exact structure:
 `
 
     const response = await ai.models.generateContent({
-     model: 'gemini-3.6-flash',
+      model: 'gemini-3.6-flash',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
       },
     })
 
-    const text = response.text
-
-    const landing = JSON.parse(text)
+    const landing = JSON.parse(response.text)
 
     res.json(landing)
   } catch (error) {
@@ -96,6 +101,14 @@ Return ONLY valid JSON in this exact structure:
   }
 })
 
-app.listen(PORT, () => {
-  console.log(`AI server running at http://localhost:${PORT}`)
+const distPath = path.join(__dirname, 'dist')
+
+app.use(express.static(distPath))
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'))
+})
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`AI server running on port ${PORT}`)
 })
