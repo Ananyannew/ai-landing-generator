@@ -811,7 +811,7 @@ const downloadHTML = () => {
               placeholder="Describe what your product does and who it helps..."
             />
           </label>
-          ```jsx
+
 <label className="field">
   <span>Business type</span>
   <select
@@ -862,7 +862,7 @@ const downloadHTML = () => {
     <option>Энергичный</option>
   </select>
 </label>
-```
+
 
 
           <fieldset className="style-picker">
