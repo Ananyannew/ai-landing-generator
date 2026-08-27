@@ -81,7 +81,12 @@ Return ONLY valid JSON in this exact structure:
 }
 `
 
-    const response = await ai.models.generateContent({
+ let response
+let lastError
+
+for (let attempt = 1; attempt <= 3; attempt++) {
+  try {
+    response = await ai.models.generateContent({
       model: 'gemini-3.6-flash',
       contents: prompt,
       config: {
@@ -89,9 +94,33 @@ Return ONLY valid JSON in this exact structure:
       },
     })
 
-    const landing = JSON.parse(response.text)
+    break
+  } catch (error) {
+    lastError = error
 
-    res.json(landing)
+    const status = error?.status || error?.error?.code
+
+    if (status !== 503 || attempt === 3) {
+      throw error
+    }
+
+    const delay = attempt === 1 ? 2000 : 4000
+
+    console.log(
+      `Gemini temporarily unavailable. Retrying in ${delay / 1000}s...`,
+    )
+
+    await new Promise((resolve) => setTimeout(resolve, delay))
+  }
+}
+
+if (!response) {
+  throw lastError
+}
+
+const landing = JSON.parse(response.text)
+
+res.json(landing)
   } catch (error) {
     console.error('Generation error:', error)
 
