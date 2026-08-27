@@ -1,3 +1,4 @@
+```js
 import 'dotenv/config'
 import express from 'express'
 import path from 'path'
@@ -30,15 +31,15 @@ app.use((req, res, next) => {
 
 app.post('/api/generate', async (req, res) => {
   try {
-   const {
-  productName,
-  productDescription,
-  style,
-  businessType,
-  targetAudience,
-  landingGoal,
-  tone,
-} = req.body
+    const {
+      productName,
+      productDescription,
+      style,
+      businessType,
+      targetAudience,
+      landingGoal,
+      tone,
+    } = req.body
 
     if (!productName || !productDescription) {
       return res.status(400).json({
@@ -47,8 +48,6 @@ app.post('/api/generate', async (req, res) => {
     }
 
     const prompt = `
-```js
-const prompt = `
 You are a professional landing page copywriter.
 
 Create landing page content for this product:
@@ -100,83 +99,47 @@ Return ONLY valid JSON in this exact structure:
   "cta": "..."
 }
 `
-```
 
+    let response
+    let lastError
 
-IMPORTANT:
-- Detect the language of the user's input.
-- Write ALL generated content in the SAME language as the user's input.
-- If the user writes in Russian, respond entirely in Russian.
-- If the user writes in English, respond entirely in English.
-- Do not translate the product name unless necessary.
-- Do not use Lorem Ipsum.
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        response = await ai.models.generateContent({
+          model: 'gemini-3.6-flash',
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+          },
+        })
 
-Return ONLY valid JSON in this exact structure:
+        break
+      } catch (error) {
+        lastError = error
 
-{
-  "badge": "...",
-  "headline": "...",
-  "subheadline": "...",
-  "benefits": ["...", "...", "..."],
-  "featuresTitle": "...",
-  "features": [
-    {
-      "title": "...",
-      "description": "..."
-    },
-    {
-      "title": "...",
-      "description": "..."
-    },
-    {
-      "title": "...",
-      "description": "..."
-    }
-  ],
-  "cta": "..."
-}
-`
+        const status = error?.status || error?.error?.code
 
- let response
-let lastError
+        if (status !== 503 || attempt === 3) {
+          throw error
+        }
 
-for (let attempt = 1; attempt <= 3; attempt++) {
-  try {
-    response = await ai.models.generateContent({
-      model: 'gemini-3.6-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-      },
-    })
+        const delay = attempt === 1 ? 2000 : 4000
 
-    break
-  } catch (error) {
-    lastError = error
+        console.log(
+          `Gemini temporarily unavailable. Retrying in ${delay / 1000}s...`,
+        )
 
-    const status = error?.status || error?.error?.code
-
-    if (status !== 503 || attempt === 3) {
-      throw error
+        await new Promise((resolve) => setTimeout(resolve, delay))
+      }
     }
 
-    const delay = attempt === 1 ? 2000 : 4000
+    if (!response) {
+      throw lastError
+    }
 
-    console.log(
-      `Gemini temporarily unavailable. Retrying in ${delay / 1000}s...`,
-    )
+    const landing = JSON.parse(response.text)
 
-    await new Promise((resolve) => setTimeout(resolve, delay))
-  }
-}
-
-if (!response) {
-  throw lastError
-}
-
-const landing = JSON.parse(response.text)
-
-res.json(landing)
+    res.json(landing)
   } catch (error) {
     console.error('Generation error:', error)
 
@@ -197,3 +160,4 @@ app.use((req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`AI server running on port ${PORT}`)
 })
+```
