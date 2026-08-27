@@ -30,7 +30,15 @@ app.use((req, res, next) => {
 
 app.post('/api/generate', async (req, res) => {
   try {
-    const { productName, productDescription, style } = req.body
+   const {
+  productName,
+  productDescription,
+  style,
+  businessType,
+  targetAudience,
+  landingGoal,
+  tone,
+} = req.body
 
     if (!productName || !productDescription) {
       return res.status(400).json({
@@ -39,13 +47,61 @@ app.post('/api/generate', async (req, res) => {
     }
 
     const prompt = `
+```js
+const prompt = `
 You are a professional landing page copywriter.
 
 Create landing page content for this product:
 
 Product name: ${productName}
 Product description: ${productDescription}
+Business type: ${businessType}
+Target audience: ${targetAudience}
+Landing goal: ${landingGoal}
+Text tone: ${tone}
 Visual style: ${style}
+
+IMPORTANT:
+- Detect the language of the user's input.
+- Write ALL generated content in the SAME language as the user's input.
+- If the user writes in Russian, respond entirely in Russian.
+- If the user writes in English, respond entirely in English.
+- Do not translate the product name unless necessary.
+- Do not use Lorem Ipsum.
+- Adapt the copy specifically to the business type.
+- Speak directly to the target audience.
+- Make every section support the selected landing goal.
+- Match the requested text tone consistently.
+- Make the headline specific to the product instead of using generic marketing phrases.
+- Make the benefits and features relevant to the actual product.
+
+Return ONLY valid JSON in this exact structure:
+
+{
+  "badge": "...",
+  "headline": "...",
+  "subheadline": "...",
+  "benefits": ["...", "...", "..."],
+  "featuresTitle": "...",
+  "features": [
+    {
+      "title": "...",
+      "description": "..."
+    },
+    {
+      "title": "...",
+      "description": "..."
+    },
+    {
+      "title": "...",
+      "description": "..."
+    }
+  ],
+  "cta": "..."
+}
+`
+```
+
 
 IMPORTANT:
 - Detect the language of the user's input.
