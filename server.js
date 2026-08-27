@@ -1,4 +1,3 @@
-```js
 import 'dotenv/config'
 import express from 'express'
 import path from 'path'
@@ -54,11 +53,11 @@ Create landing page content for this product:
 
 Product name: ${productName}
 Product description: ${productDescription}
-Business type: ${businessType}
-Target audience: ${targetAudience}
-Landing goal: ${landingGoal}
-Text tone: ${tone}
-Visual style: ${style}
+Business type: ${businessType || 'Not specified'}
+Target audience: ${targetAudience || 'Not specified'}
+Landing goal: ${landingGoal || 'Not specified'}
+Text tone: ${tone || 'Professional'}
+Visual style: ${style || 'minimal'}
 
 IMPORTANT:
 - Detect the language of the user's input.
@@ -73,6 +72,7 @@ IMPORTANT:
 - Match the requested text tone consistently.
 - Make the headline specific to the product instead of using generic marketing phrases.
 - Make the benefits and features relevant to the actual product.
+- Keep the copy concise and suitable for a modern landing page.
 
 Return ONLY valid JSON in this exact structure:
 
@@ -160,4 +160,3 @@ app.use((req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`AI server running on port ${PORT}`)
 })
-```
