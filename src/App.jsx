@@ -1,6 +1,78 @@
 import { useState } from 'react'
 import './App.css'
 
+const translations = {
+  en: {
+    eyebrow: 'AI Landing Page Generator',
+    title: 'Turn a product idea into a landing page concept.',
+    intro:
+      'Describe your product, choose a visual direction, and generate a conversion-focused landing page preview in seconds.',
+    editor: 'Editor',
+    describeProduct: 'Describe the product',
+    ready: 'Ready',
+    generated: 'Generated',
+    productName: 'Product name',
+    productNamePlaceholder: 'e.g. Flowdesk',
+    productDescription: 'Product description',
+    productDescriptionPlaceholder:
+      'Describe what your product does and who it helps...',
+    businessType: 'Business type',
+    targetAudience: 'Target audience',
+    targetAudiencePlaceholder: 'e.g. Small business owners',
+    landingGoal: 'Landing goal',
+    textTone: 'Text tone',
+    landingStyle: 'Landing style',
+    generate: 'Generate Landing Page',
+    generating: 'Generating...',
+    download: 'Download HTML',
+    clear: 'Clear',
+    preview: 'Preview',
+    generatedLanding: 'Generated landing page',
+    regenerate: 'Regenerate',
+    generatingPreview: 'Generating your landing page...',
+    emptyTitle: 'Your landing page preview will appear here',
+    emptyText:
+      'Add product details, choose a style, and generate a complete landing page concept with conversion-focused sections.',
+    readyToGenerate: 'Ready',
+    nextStep: 'Ready to take the next step?',
+  },
+
+  ru: {
+    eyebrow: 'AI Генератор лендингов',
+    title: 'Превратите идею продукта в концепцию лендинга.',
+    intro:
+      'Опишите продукт, выберите визуальный стиль и создайте конверсионный лендинг за несколько секунд.',
+    editor: 'Редактор',
+    describeProduct: 'Опишите продукт',
+    ready: 'Готов',
+    generated: 'Сгенерировано',
+    productName: 'Название продукта',
+    productNamePlaceholder: 'например, Flowdesk',
+    productDescription: 'Описание продукта',
+    productDescriptionPlaceholder:
+      'Опишите, что делает ваш продукт и кому он помогает...',
+    businessType: 'Тип бизнеса',
+    targetAudience: 'Целевая аудитория',
+    targetAudiencePlaceholder: 'например, владельцы малого бизнеса',
+    landingGoal: 'Цель лендинга',
+    textTone: 'Тон текста',
+    landingStyle: 'Стиль лендинга',
+    generate: 'Создать лендинг',
+    generating: 'Генерация...',
+    download: 'Скачать HTML',
+    clear: 'Очистить',
+    preview: 'Предпросмотр',
+    generatedLanding: 'Сгенерированный лендинг',
+    regenerate: 'Сгенерировать заново',
+    generatingPreview: 'Создаём ваш лендинг...',
+    emptyTitle: 'Здесь появится предпросмотр лендинга',
+    emptyText:
+      'Добавьте информацию о продукте, выберите стиль и создайте полноценную концепцию лендинга.',
+    readyToGenerate: 'Готов',
+    nextStep: 'Готовы сделать следующий шаг?',
+  },
+}
+
 const landingStyles = [
   {
     id: 'minimal',
@@ -191,6 +263,8 @@ const variant = variants[selectedStyle]
 }
 
 function App() {
+  const [language, setLanguage] = useState('en')
+  const t = translations[language]
   const [productName, setProductName] = useState('')
   const [productDescription, setProductDescription] = useState('')
   const [selectedStyle, setSelectedStyle] = useState('minimal')
@@ -771,21 +845,38 @@ const downloadHTML = () => {
 
   return (
     <main className="app-shell">
-      <header className="intro-panel">
-        <p className="eyebrow">AI Landing Page Generator</p>
-        <h1>Turn a product idea into a landing page concept.</h1>
-        <p className="intro-copy">
-          Describe your product, choose a visual direction, and generate a
-          conversion-focused landing page preview in seconds.
-        </p>
+     <header className="intro-panel">
+  <div className="header-top">
+   <p className="eyebrow">{t.eyebrow}</p>
+
+    <div className="language-switcher">
+      <button
+        type="button"
+        className={language === 'en' ? 'active' : ''}
+        onClick={() => setLanguage('en')}
+      >
+        EN
+      </button>
+
+      <button
+        type="button"
+        className={language === 'ru' ? 'active' : ''}
+        onClick={() => setLanguage('ru')}
+      >
+        RU
+      </button>
+    </div>
+  </div>
+       <h1>{t.title}</h1>
+<p className="intro-copy">{t.intro}</p>
       </header>
 
       <section className="workspace">
         <aside className="editor-panel">
           <div className="panel-heading">
             <div>
-              <p className="section-kicker">Editor</p>
-              <h2>Describe the product</h2>
+             <p className="section-kicker">{t.editor}</p>
+<h2>{t.describeProduct}</h2>
             </div>
 
             <span className="status-pill">
@@ -794,79 +885,89 @@ const downloadHTML = () => {
           </div>
 
           <label className="field">
-            <span>Product name</span>
+            <span>{t.productName}</span>
             <input
               type="text"
               value={productName}
               onChange={(event) => setProductName(event.target.value)}
-              placeholder="e.g. Flowdesk"
+           placeholder={t.productNamePlaceholder}
             />
           </label>
 
           <label className="field">
-            <span>Product description</span>
+          <span>{t.productDescription}</span>
             <textarea
               value={productDescription}
               onChange={(event) => setProductDescription(event.target.value)}
-              placeholder="Describe what your product does and who it helps..."
+            placeholder={t.productDescriptionPlaceholder}
             />
           </label>
 
 <label className="field">
-  <span>Business type</span>
+ <span>{t.businessType}</span>
   <select
     value={businessType}
     onChange={(event) => setBusinessType(event.target.value)}
   >
-    <option>SaaS</option>
-    <option>Интернет-магазин</option>
-    <option>Агентство</option>
-    <option>Мобильное приложение</option>
-    <option>Сервис</option>
-    <option>Другое</option>
+  <option>SaaS</option>
+<option>{language === 'ru' ? 'Интернет-магазин' : 'E-commerce'}</option>
+<option>{language === 'ru' ? 'Агентство' : 'Agency'}</option>
+<option>{language === 'ru' ? 'Мобильное приложение' : 'Mobile app'}</option>
+<option>{language === 'ru' ? 'Сервис' : 'Service'}</option>
+<option>{language === 'ru' ? 'Другое' : 'Other'}</option>
   </select>
 </label>
 
 <label className="field">
-  <span>Target audience</span>
+  <span>{t.targetAudience}</span>
   <input
     type="text"
     value={targetAudience}
     onChange={(event) => setTargetAudience(event.target.value)}
-    placeholder="e.g. Small business owners"
+    placeholder={t.targetAudiencePlaceholder}
   />
 </label>
 
 <label className="field">
-  <span>Landing goal</span>
+  <span>{t.landingGoal}</span>
   <select
     value={landingGoal}
     onChange={(event) => setLandingGoal(event.target.value)}
   >
-    <option>Продажа</option>
-    <option>Заявка</option>
-    <option>Регистрация</option>
-    <option>Скачать приложение</option>
+    <option>{language === 'ru' ? 'Продажа' : 'Sales'}</option>
+    <option>{language === 'ru' ? 'Заявка' : 'Lead generation'}</option>
+    <option>{language === 'ru' ? 'Регистрация' : 'Sign up'}</option>
+    <option>
+      {language === 'ru' ? 'Скачать приложение' : 'Download app'}
+    </option>
   </select>
 </label>
 
 <label className="field">
-  <span>Text tone</span>
+  <span>{t.textTone}</span>
   <select
     value={tone}
     onChange={(event) => setTone(event.target.value)}
   >
-    <option>Профессиональный</option>
-    <option>Дружелюбный</option>
-    <option>Премиальный</option>
-    <option>Энергичный</option>
+    <option>
+      {language === 'ru' ? 'Профессиональный' : 'Professional'}
+    </option>
+    <option>
+      {language === 'ru' ? 'Дружелюбный' : 'Friendly'}
+    </option>
+    <option>
+      {language === 'ru' ? 'Премиальный' : 'Premium'}
+    </option>
+    <option>
+      {language === 'ru' ? 'Энергичный' : 'Energetic'}
+    </option>
   </select>
 </label>
 
 
 
           <fieldset className="style-picker">
-            <legend>Landing style</legend>
+           <legend>{t.landingStyle}</legend>
 
             <div className="style-grid">
               {landingStyles.map((style) => (
@@ -897,7 +998,7 @@ const downloadHTML = () => {
               onClick={generateLanding}
               disabled={isGenerating}
             >
-              {isGenerating ? 'Generating...' : 'Generate Landing Page'}
+             {isGenerating ? t.generating : t.generate}
             </button>
 <button
   type="button"
@@ -905,7 +1006,7 @@ const downloadHTML = () => {
   onClick={downloadHTML}
   disabled={!landing || isGenerating}
 >
-  Download HTML
+ {t.download}
 </button>
             <button
               type="button"
@@ -913,7 +1014,7 @@ const downloadHTML = () => {
               onClick={clearAll}
               disabled={isGenerating}
             >
-              Clear
+             {t.clear}
             </button>
           </div>
         </aside>
@@ -921,8 +1022,8 @@ const downloadHTML = () => {
         <section className="preview-panel">
           <div className="panel-heading">
             <div>
-              <p className="section-kicker">Preview</p>
-              <h2>Generated landing page</h2>
+              <p className="section-kicker">{t.preview}</p>
+<h2>{t.generatedLanding}</h2>
             </div>
 
             {landing && (
@@ -932,7 +1033,7 @@ const downloadHTML = () => {
                 onClick={regenerateLanding}
                 disabled={isGenerating}
               >
-                Regenerate
+               {t.regenerate}
               </button>
             )}
           </div>
@@ -940,7 +1041,7 @@ const downloadHTML = () => {
           {isGenerating ? (
             <div className="loading-state">
               <div className="loading-dot" />
-              <span>Generating your landing page...</span>
+             <span>{t.generatingPreview}</span>
             </div>
           ) : landing ? (
             <article
@@ -983,7 +1084,7 @@ const downloadHTML = () => {
               </section>
 
               <section className="preview-final-cta">
-                <h4>Ready to take the next step?</h4>
+              <h4>{t.nextStep}</h4>
                 <button type="button">{landing.cta}</button>
               </section>
             </article>
@@ -991,11 +1092,8 @@ const downloadHTML = () => {
             <div className="empty-preview">
               <div className="empty-preview-card">
                 <span className="empty-icon">AI</span>
-                <h3>Your landing page preview will appear here</h3>
-                <p>
-                  Add product details, choose a style, and generate a complete
-                  landing page concept with conversion-focused sections.
-                </p>
+                <h3>{t.emptyTitle}</h3>
+                <p>{t.emptyText}</p>
               </div>
             </div>
           )}
