@@ -194,6 +194,10 @@ function App() {
   const [productName, setProductName] = useState('')
   const [productDescription, setProductDescription] = useState('')
   const [selectedStyle, setSelectedStyle] = useState('minimal')
+  const [businessType, setBusinessType] = useState('SaaS')
+const [targetAudience, setTargetAudience] = useState('')
+const [landingGoal, setLandingGoal] = useState('Продажа')
+const [tone, setTone] = useState('Профессиональный')
   const [landing, setLanding] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [generationIndex, setGenerationIndex] = useState(0)
@@ -211,11 +215,15 @@ function App() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        productName,
-        productDescription,
-        style: selectedStyle,
-      }),
+    body: JSON.stringify({
+  productName,
+  productDescription,
+  style: selectedStyle,
+  businessType,
+  targetAudience,
+  landingGoal,
+  tone,
+}),
     })
 
     if (!response.ok) {
@@ -803,6 +811,59 @@ const downloadHTML = () => {
               placeholder="Describe what your product does and who it helps..."
             />
           </label>
+          ```jsx
+<label className="field">
+  <span>Business type</span>
+  <select
+    value={businessType}
+    onChange={(event) => setBusinessType(event.target.value)}
+  >
+    <option>SaaS</option>
+    <option>Интернет-магазин</option>
+    <option>Агентство</option>
+    <option>Мобильное приложение</option>
+    <option>Сервис</option>
+    <option>Другое</option>
+  </select>
+</label>
+
+<label className="field">
+  <span>Target audience</span>
+  <input
+    type="text"
+    value={targetAudience}
+    onChange={(event) => setTargetAudience(event.target.value)}
+    placeholder="e.g. Small business owners"
+  />
+</label>
+
+<label className="field">
+  <span>Landing goal</span>
+  <select
+    value={landingGoal}
+    onChange={(event) => setLandingGoal(event.target.value)}
+  >
+    <option>Продажа</option>
+    <option>Заявка</option>
+    <option>Регистрация</option>
+    <option>Скачать приложение</option>
+  </select>
+</label>
+
+<label className="field">
+  <span>Text tone</span>
+  <select
+    value={tone}
+    onChange={(event) => setTone(event.target.value)}
+  >
+    <option>Профессиональный</option>
+    <option>Дружелюбный</option>
+    <option>Премиальный</option>
+    <option>Энергичный</option>
+  </select>
+</label>
+```
+
 
           <fieldset className="style-picker">
             <legend>Landing style</legend>
