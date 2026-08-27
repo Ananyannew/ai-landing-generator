@@ -148,7 +148,72 @@ Return ONLY valid JSON in this exact structure:
     })
   }
 })
+app.post('/api/generate-image', async (req, res) => {
+  try {
+    const {
+      productName,
+      productDescription,
+      style,
+      businessType,
+      targetAudience,
+    } = req.body
 
+    if (!productName || !productDescription) {
+      return res.status(400).json({
+        error: 'Product name and description are required.',
+      })
+    }
+
+    const imagePrompt = `
+Create a professional hero image for a modern landing page.
+
+Product: ${productName}
+Product description: ${productDescription}
+Business type: ${businessType || 'Not specified'}
+Target audience: ${targetAudience || 'Not specified'}
+Visual style: ${style || 'minimal'}
+
+Requirements:
+- Create a premium, modern commercial visual.
+- Make the image clearly relevant to the actual product.
+- Match the requested visual style.
+- Suitable for a website hero section.
+- Wide 16:9 composition.
+- No text.
+- No logos.
+- No buttons.
+- No UI text.
+`
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.1-flash-image',
+      contents: imagePrompt,
+      config: {
+        responseModalities: ['IMAGE'],
+      },
+    })
+
+    const parts = response.candidates?.[0]?.content?.parts || []
+
+    const imagePart = parts.find(
+      (part) => part.inlineData?.data,
+    )
+
+    if (!imagePart) {
+      throw new Error('Gemini did not return an image.')
+    }
+
+    res.json({
+      image: `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`,
+    })
+  } catch (error) {
+    console.error('Image generation error:', error)
+
+    res.status(500).json({
+      error: 'Failed to generate image.',
+    })
+  }
+})
 const distPath = path.join(__dirname, 'dist')
 
 app.use(express.static(distPath))

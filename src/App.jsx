@@ -267,6 +267,7 @@ function App() {
   const t = translations[language]
   const [productName, setProductName] = useState('')
   const [productDescription, setProductDescription] = useState('')
+  const [heroImage, setHeroImage] = useState('')
   const [selectedStyle, setSelectedStyle] = useState('minimal')
   const [businessType, setBusinessType] = useState('SaaS')
 const [targetAudience, setTargetAudience] = useState('')
@@ -304,16 +305,38 @@ const [tone, setTone] = useState('Профессиональный')
       throw new Error('Failed to generate landing page')
     }
 
-    const generatedLanding = await response.json()
+   const generatedLanding = await response.json()
 
-    setLanding({
-      ...generatedLanding,
-      productName,
-      productDescription,
-      style: selectedStyle,
-    })
+const imageResponse = await fetch('/api/generate-image', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    productName,
+    productDescription,
+    style: selectedStyle,
+    businessType,
+    targetAudience,
+  }),
+})
 
-    setGenerationIndex((index) => index + 1)
+if (!imageResponse.ok) {
+  throw new Error('Failed to generate hero image')
+}
+
+const imageData = await imageResponse.json()
+
+setHeroImage(imageData.image)
+
+setLanding({
+  ...generatedLanding,
+  productName,
+  productDescription,
+  style: selectedStyle,
+})
+
+setGenerationIndex((index) => index + 1)
   } catch (error) {
     console.error(error)
     alert('Не удалось сгенерировать лендинг. Проверь, запущен ли AI-сервер.')
@@ -1047,15 +1070,26 @@ const downloadHTML = () => {
             <article
               className={`landing-preview theme-${selectedStyle} ${styleLayouts[selectedStyle]}`}
             >
-              <section className="preview-hero">
-                <span className="preview-badge">{landing.badge}</span>
+             <section className="preview-hero">
+  <div className="preview-hero-content">
+    <span className="preview-badge">{landing.badge}</span>
 
-                <h3>{landing.headline}</h3>
+    <h3>{landing.headline}</h3>
 
-                <p>{landing.subheadline}</p>
+    <p>{landing.subheadline}</p>
 
-                <button type="button">{landing.cta}</button>
-              </section>
+    <button type="button">{landing.cta}</button>
+  </div>
+
+  {heroImage && (
+    <div className="preview-hero-image">
+      <img
+        src={heroImage}
+        alt={productName}
+      />
+    </div>
+  )}
+</section>
 
               <section className="preview-benefits">
                 {landing.benefits.map((benefit) => (
