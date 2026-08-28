@@ -324,6 +324,7 @@
 }
 
 .landing-preview {
+  container-type: inline-size;
   margin-top: 20px;
   overflow: hidden;
   border: 1px solid var(--preview-border);
@@ -381,9 +382,11 @@
   max-width: 680px;
   margin: 0;
   color: var(--preview-heading);
-  font-size: clamp(2.1rem, 5vw, 4.3rem);
-  line-height: 0.98;
-  letter-spacing: 0;
+  font-size: clamp(1.8rem, 7cqw, 4.3rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .preview-hero p {
