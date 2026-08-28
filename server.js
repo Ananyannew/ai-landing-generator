@@ -148,6 +148,7 @@ Return ONLY valid JSON in this exact structure:
     })
   }
 })
+
 app.post('/api/generate-image', async (req, res) => {
   try {
     const {
@@ -200,7 +201,10 @@ Requirements:
     )
 
     if (!imagePart) {
-      throw new Error('Gemini did not return an image.')
+      return res.json({
+        image: null,
+        error: 'Gemini did not return an image.',
+      })
     }
 
     res.json({
@@ -209,11 +213,22 @@ Requirements:
   } catch (error) {
     console.error('Image generation error:', error)
 
-    res.status(500).json({
-      error: 'Failed to generate image.',
+    const status = error?.status || error?.error?.code
+
+    if (status === 429) {
+      return res.json({
+        image: null,
+        error: 'Image generation quota exceeded.',
+      })
+    }
+
+    return res.json({
+      image: null,
+      error: 'Image generation is temporarily unavailable.',
     })
   }
 })
+
 const distPath = path.join(__dirname, 'dist')
 
 app.use(express.static(distPath))
